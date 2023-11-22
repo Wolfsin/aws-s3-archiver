@@ -2,13 +2,17 @@
     "name": "aws-s3-archiver",
     "version": "1.0.0",
     "description": "",
-    "main": "index.js",
+    "main": "./dist/index.cjs",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
     "scripts": {
         "lint": "eslint src __tests__",
         "lint:fix": "eslint src --fix",
         "test": "vitest --config ./vitest.config.ts",
         "coverage": "vitest run --coverage",
-        "bulid": "tsc"
+        "bulid": "unbuild"
     },
     "keywords": [
         "aws",
@@ -18,9 +22,16 @@
         "typescript"
     ],
     "type": "module",
+    "exports": {
+        ".": {
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs"
+        }
+    },
     "author": "Wolfsin",
     "license": "ISC",
     "dependencies": {
+        "@aws-sdk/client-s3": "^3.456.0",
         "archiver": "^6.0.1"
     },
     "devDependencies": {
@@ -32,6 +43,7 @@
         "eslint-config-prettier": "^9.0.0",
         "prettier": "^3.1.0",
         "typescript": "^5.3.2",
+        "unbuild": "^2.0.0",
         "vitest": "^0.34.6"
     }
 }

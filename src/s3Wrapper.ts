@@ -1,4 +1,5 @@
-import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
+import { Readable } from 'stream';
 
 export const listObjects = async (
     client: S3Client,
@@ -27,4 +28,19 @@ export const listObjects = async (
         ContinuationToken = NextContinuationToken;
     }
     return contents;
+};
+
+export const getObject = async (
+    client: S3Client,
+    bucket: string,
+    path: string,
+    fileName: string,
+): Promise<Readable | ReadableStream | Blob> => {
+    const command = new GetObjectCommand({
+        Bucket: bucket,
+        Key: `${path}/${fileName}`,
+    });
+    const response = await client.send(command);
+    if (!response.Body) throw new Error('Body is undefined');
+    return response.Body;
 };

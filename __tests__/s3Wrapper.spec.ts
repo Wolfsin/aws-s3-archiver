@@ -1,27 +1,25 @@
-import { S3Client, ListObjectsV2Command } from '@aws-sdk/client-s3';
+import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import { Readable } from 'stream';
-import { createReadStream } from 'fs';
 
 import { describe, expect, it } from 'vitest';
-import { listObjects } from '../src/s3Wrapper';
+import { listObjects, getObject } from '../src/s3Wrapper';
 
 const s3Mock = mockClient(S3Client);
 describe('s3Wrapper', () => {
-    beforeEach(() => {
-        s3Mock.on(ListObjectsV2Command).resolves({
-            Contents: [{ Key: 'testPath/test1.csv' }, { Key: 'test2.csv' }],
-            IsTruncated: false,
-            NextContinuationToken: undefined,
-        });
-    });
-    afterEach(() => {
-        s3Mock.reset();
-    });
-
     describe('listObjects', () => {
+        beforeEach(() => {
+            s3Mock.on(ListObjectsV2Command).resolves({
+                Contents: [{ Key: 'testPath/test1.csv' }, { Key: 'test2.csv' }],
+                IsTruncated: false,
+                NextContinuationToken: undefined,
+            });
+        });
+        afterEach(() => {
+            s3Mock.reset();
+        });
         it('NextContinuationToken is undefined', async () => {
             await listObjects(new S3Client({}), 'bucket', 'path');
             expect(s3Mock.commandCalls(ListObjectsV2Command)[0].args[0].input).toEqual({
@@ -77,6 +75,39 @@ describe('s3Wrapper', () => {
             await expect(() =>
                 listObjects(new S3Client({}), 'bucket', 'path'),
             ).rejects.toThrowError('Content Key is undefined');
+        });
+    });
+
+    describe('getObject', () => {
+        const stream = new Readable();
+        stream.push('hello world');
+        stream.push(null);
+        const sdkStream = sdkStreamMixin(stream);
+
+        beforeEach(() => {
+            s3Mock.on(GetObjectCommand).resolves({ Body: sdkStream });
+        });
+        afterEach(() => {
+            s3Mock.reset();
+        });
+        it('correctly sets the parameters when calling getObject', async () => {
+            await getObject(new S3Client({}), 'bucket', 'path', 'test.csv');
+            expect(s3Mock.commandCalls(GetObjectCommand)[0].args[0].input).toEqual({
+                Bucket: 'bucket',
+                Key: 'path/test.csv',
+            });
+        });
+        it('returns the expected value', async () => {
+            expect(await getObject(new S3Client({}), 'bucket', 'path', 'test.csv')).toEqual(
+                sdkStream,
+            );
+        });
+        it('throws error when response.Body is empty', async () => {
+            s3Mock.reset();
+            s3Mock.on(GetObjectCommand).resolves({});
+            await expect(() =>
+                getObject(new S3Client({}), 'bucket', 'path', 'test.csv'),
+            ).rejects.toThrowError('Body is undefined');
         });
     });
 });

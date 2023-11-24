@@ -9,8 +9,9 @@ export const s3Zip = async (
     targetPath: string = sourcePath,
     targetFileName: string = 'archive.zip',
     zipOptions: object = {},
+    s3ClientOptions: object = {},
 ) => {
-    const client = new S3Client({});
+    const client = new S3Client(s3ClientOptions);
     if (sourceFileList.length === 0) {
         const listObjectResult = await listObjects(client, sourceBucket, sourcePath);
         sourceFileList = [...listObjectResult];

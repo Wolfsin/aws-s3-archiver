@@ -38,7 +38,7 @@ export const getObject = async (
 ): Promise<Readable | ReadableStream | Blob> => {
     const command = new GetObjectCommand({
         Bucket: bucket,
-        Key: `${path}/${fileName}`,
+        Key: path.length === 0 ? fileName : `${path}/${fileName}`,
     });
     const response = await client.send(command);
     if (!response.Body) throw new Error('Body is undefined');

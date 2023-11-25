@@ -90,6 +90,13 @@ describe('s3Wrapper', () => {
         afterEach(() => {
             s3Mock.reset();
         });
+        it('file directly below bucket', async () => {
+            await getObject(new S3Client({}), 'bucket', '', 'test.csv');
+            expect(s3Mock.commandCalls(GetObjectCommand)[0].args[0].input).toEqual({
+                Bucket: 'bucket',
+                Key: 'test.csv',
+            });
+        });
         it('correctly sets the parameters when calling getObject', async () => {
             await getObject(new S3Client({}), 'bucket', 'path', 'test.csv');
             expect(s3Mock.commandCalls(GetObjectCommand)[0].args[0].input).toEqual({

@@ -1,4 +1,5 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { Readable } from 'stream';
 
 export const listObjects = async (
@@ -30,7 +31,7 @@ export const listObjects = async (
     return contents;
 };
 
-export const getObject = async (
+export const getObjectStream = async (
     client: S3Client,
     bucket: string,
     path: string,
@@ -43,4 +44,22 @@ export const getObject = async (
     const response = await client.send(command);
     if (!response.Body) throw new Error('Body is undefined');
     return response.Body;
+};
+
+export const uploadObject = async (
+    client: S3Client,
+    bucket: string,
+    path: string,
+    fileName: string,
+    body: Readable | ReadableStream | Blob | string,
+): Promise<void> => {
+    const parallelUploads3 = new Upload({
+        client,
+        params: {
+            Bucket: bucket,
+            Key: path.length === 0 ? fileName : `${path}/${fileName}`,
+            Body: body,
+        },
+    });
+    await parallelUploads3.done();
 };

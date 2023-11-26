@@ -1,11 +1,18 @@
-import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+    S3Client,
+    ListObjectsV2Command,
+    GetObjectCommand,
+    CreateMultipartUploadCommand,
+    UploadPartCommand,
+    PutObjectCommand,
+} from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import { Readable } from 'stream';
 
 import { describe, expect, it } from 'vitest';
-import { listObjects, getObject } from '../src/s3Wrapper';
+import { listObjects, getObjectStream, uploadObject } from '../src/s3Wrapper';
 
 const s3Mock = mockClient(S3Client);
 describe('s3Wrapper', () => {
@@ -77,8 +84,7 @@ describe('s3Wrapper', () => {
             ).rejects.toThrowError('Content Key is undefined');
         });
     });
-
-    describe('getObject', () => {
+    describe('getObjectStream', () => {
         const stream = new Readable();
         stream.push('hello world');
         stream.push(null);
@@ -91,21 +97,21 @@ describe('s3Wrapper', () => {
             s3Mock.reset();
         });
         it('file directly below bucket', async () => {
-            await getObject(new S3Client({}), 'bucket', '', 'test.csv');
+            await getObjectStream(new S3Client({}), 'bucket', '', 'test.csv');
             expect(s3Mock.commandCalls(GetObjectCommand)[0].args[0].input).toEqual({
                 Bucket: 'bucket',
                 Key: 'test.csv',
             });
         });
         it('correctly sets the parameters when calling getObject', async () => {
-            await getObject(new S3Client({}), 'bucket', 'path', 'test.csv');
+            await getObjectStream(new S3Client({}), 'bucket', 'path', 'test.csv');
             expect(s3Mock.commandCalls(GetObjectCommand)[0].args[0].input).toEqual({
                 Bucket: 'bucket',
                 Key: 'path/test.csv',
             });
         });
         it('returns the expected value', async () => {
-            expect(await getObject(new S3Client({}), 'bucket', 'path', 'test.csv')).toEqual(
+            expect(await getObjectStream(new S3Client({}), 'bucket', 'path', 'test.csv')).toEqual(
                 sdkStream,
             );
         });
@@ -113,8 +119,39 @@ describe('s3Wrapper', () => {
             s3Mock.reset();
             s3Mock.on(GetObjectCommand).resolves({});
             await expect(() =>
-                getObject(new S3Client({}), 'bucket', 'path', 'test.csv'),
+                getObjectStream(new S3Client({}), 'bucket', 'path', 'test.csv'),
             ).rejects.toThrowError('Body is undefined');
+        });
+    });
+    describe('uploadObject', () => {
+        const stream = new Readable();
+        stream.push('hello world');
+        stream.push(null);
+        const sdkStream = sdkStreamMixin(stream);
+
+        beforeEach(() => {
+            s3Mock.on(CreateMultipartUploadCommand).resolves({ UploadId: '1' });
+            s3Mock.on(UploadPartCommand).resolves({ ETag: '1' });
+            s3Mock.on(PutObjectCommand).resolves({});
+        });
+        afterEach(() => {
+            s3Mock.reset();
+        });
+        it('file directly below bucket', async () => {
+            await uploadObject(new S3Client({}), 'bucket', '', 'test.csv', sdkStream);
+            expect(s3Mock.commandCalls(PutObjectCommand)[0].args[0].input).toEqual({
+                Bucket: 'bucket',
+                Key: 'test.csv',
+                Body: expect.any(Object),
+            });
+        });
+        it('correctly sets the parameters when calling getObject', async () => {
+            await uploadObject(new S3Client({}), 'bucket', 'path', 'test.csv', sdkStream);
+            expect(s3Mock.commandCalls(PutObjectCommand)[0].args[0].input).toEqual({
+                Bucket: 'bucket',
+                Key: 'path/test.csv',
+                Body: expect.any(Object),
+            });
         });
     });
 });

@@ -57,7 +57,7 @@ export const uploadObject = async (
         client,
         params: {
             Bucket: bucket,
-            Key: path.length === 0 ? fileName : `${path}/${fileName}`,
+            Key: path.length === 0 ? `${fileName}.zip` : `${path}/${fileName}.zip`,
             Body: body,
         },
     });

@@ -1,4 +1,10 @@
-import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
+import {
+    S3Client,
+    ListObjectsV2Command,
+    GetObjectCommand,
+    AbortMultipartUploadCommandOutput,
+    CompleteMultipartUploadCommandOutput,
+} from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { Readable } from 'stream';
 
@@ -52,7 +58,7 @@ export const uploadObject = async (
     path: string,
     fileName: string,
     body: Readable | ReadableStream | Blob | string,
-): Promise<void> => {
+): Promise<AbortMultipartUploadCommandOutput | CompleteMultipartUploadCommandOutput> => {
     const parallelUploads3 = new Upload({
         client,
         params: {
@@ -61,5 +67,6 @@ export const uploadObject = async (
             Body: body,
         },
     });
-    await parallelUploads3.done();
+    const response = await parallelUploads3.done();
+    return response;
 };

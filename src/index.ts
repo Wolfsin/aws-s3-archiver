@@ -8,27 +8,32 @@ import archiver from 'archiver';
  *
  * @param {string} sourceBucket - The name of the source S3 bucket.
  * @param {string} sourcePath - The path in the source bucket where the files to be archived are located.
+ * @param {string} targetFileName - The name of the zip file. Defaults to 'archive'.
  * @param {string[]} sourceFileList - An array of file names to be archived. If empty, all files in the source will be archived.
  * @param {string} targetBucket - The name of the target S3 bucket where the zip file will be stored. Defaults to the source bucket.
  * @param {string} targetPath - The path in the target bucket where the zip file will be stored. Defaults to the source path.
- * @param {string} targetFileName - The name of the zip file. Defaults to 'archive'.
  * @param {object} s3ClientOptions - Options for the S3 client. Defaults to an empty object.
  * @param {object} zipOptions - Options for the archiver. Defaults to an empty object.
  * @returns {Promise<void>} A promise that resolves when the zip file has been created and stored in S3.
- * @example s3Zip('sourceBucket', 'sourcePath', ['file1.txt', 'file2.txt'], 'targetBucket', 'targetPath', 'archive',{region: 'ap-northeast-1'},{zlib: { level: 0 }});
+ * @example s3Zip('sourceBucket', 'sourcePath', 'archive')
+ * @example s3Zip('sourceBucket', 'sourcePath', 'archive', ['file1.txt', 'file2.txt'])
+ * @example s3Zip('sourceBucket', 'sourcePath', 'archive', ['file1.txt', 'file2.txt'], 'targetBucket', 'targetPath')
+ * @example s3Zip('sourceBucket', 'sourcePath', 'archive', ['file1.txt', 'file2.txt'], 'targetBucket', 'targetPath', { region: 'us-east-1' })
+ * @example s3Zip('sourceBucket', 'sourcePath', 'archive', ['file1.txt', 'file2.txt'], 'targetBucket', 'targetPath', { region: 'us-east-1' }, { zlib: { level: 9 } })
  */
 export const s3Zip = async (
     sourceBucket: string,
     sourcePath: string,
+    targetFileName: string = 'archive',
     sourceFileList: string[] = [],
     targetBucket: string = sourceBucket,
     targetPath: string = sourcePath,
-    targetFileName: string = 'archive',
     s3ClientOptions: object = {},
     zipOptions: object = {},
 ): Promise<void> => {
     const streamArchiver = archiver('zip', zipOptions);
     const outputStream = new PassThrough();
+    streamArchiver.pipe(outputStream);
     const client = new S3Client(s3ClientOptions);
 
     if (sourceFileList.length === 0) {

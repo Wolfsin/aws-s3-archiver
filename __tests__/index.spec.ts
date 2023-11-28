@@ -17,6 +17,7 @@ describe('index', () => {
         return {
             default: mocks.mockArchiver.mockImplementation(() => {
                 return {
+                    pipe: vi.fn(),
                     append: mocks.mockArchiverAppend,
                     finalize: mocks.mockArchiverFinalize,
                 };
@@ -54,10 +55,10 @@ describe('index', () => {
             await s3Zip(
                 'sourceBucket',
                 'sourcePath',
+                'archive',
                 [],
                 'targetBucket',
                 'targetPath',
-                'archive',
                 { region: 'ap-northeast-1' },
                 { zlib: { level: 0 } },
             );
@@ -75,10 +76,10 @@ describe('index', () => {
             await s3Zip(
                 'sourceBucket',
                 'sourcePath',
+                'archive',
                 ['file1.txt', 'file2.txt'],
                 'targetBucket',
                 'targetPath',
-                'archive',
                 { region: 'ap-northeast-1' },
                 { zlib: { level: 0 } },
             );

@@ -14,7 +14,7 @@ import archiver from 'archiver';
  * @param {string} targetPath - The path in the target bucket where the zip file will be stored. Defaults to the source path.
  * @param {object} s3ClientOptions - Options for the S3 client. Defaults to an empty object.
  * @param {object} zipOptions - Options for the archiver. Defaults to an empty object.
- * @returns {Promise<void>} A promise that resolves when the zip file has been created and stored in S3.
+ * @returns {Promise<object>} A promise that resolves with s3Upload Response when the zip file has been created and stored in S3.
  * @example s3Zip('sourceBucket', 'sourcePath', 'archive')
  * @example s3Zip('sourceBucket', 'sourcePath', 'archive', ['file1.txt', 'file2.txt'])
  * @example s3Zip('sourceBucket', 'sourcePath', 'archive', ['file1.txt', 'file2.txt'], 'targetBucket', 'targetPath')
@@ -30,7 +30,7 @@ export const s3Zip = async (
     targetPath: string = sourcePath,
     s3ClientOptions: object = {},
     zipOptions: object = {},
-): Promise<void> => {
+): Promise<object> => {
     const streamArchiver = archiver('zip', zipOptions);
     const outputStream = new PassThrough();
     streamArchiver.pipe(outputStream);
@@ -52,5 +52,12 @@ export const s3Zip = async (
     });
     await streamArchiver.finalize();
 
-    await uploadObject(client, targetBucket, targetPath, targetFileName, outputStream);
+    const response = await uploadObject(
+        client,
+        targetBucket,
+        targetPath,
+        targetFileName,
+        outputStream,
+    );
+    return response;
 };

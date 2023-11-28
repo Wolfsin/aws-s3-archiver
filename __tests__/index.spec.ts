@@ -41,7 +41,7 @@ describe('index', () => {
             .mockResolvedValueOnce(sdkStreamWithFile1)
             .mockResolvedValueOnce(sdkStreamWithFile2);
         spyListObjects.mockResolvedValue(['file1.txt', 'file2.txt']);
-        spyUploadObject.mockResolvedValue();
+        spyUploadObject.mockResolvedValue({ $metadata: { httpStatusCode: 200 } });
     });
     afterEach(() => {
         spyGetObjectStream.mockReset();
@@ -113,4 +113,9 @@ describe('index', () => {
             });
         });
     });
+    it('sets default values correctly when targetFileName is empty', () => {});
+    it('sets default values correctly when targetBucket is empty', () => {});
+    it('sets default values correctly when targetPath is empty', () => {});
+    it('sets default values correctly when s3ClientOptions is empty', () => {});
+    it('sets default values correctly when zipOptions is empty', () => {});
 });

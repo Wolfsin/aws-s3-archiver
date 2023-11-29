@@ -50,7 +50,8 @@ export const s3Zip = async (
         const name = sourceFileList[fileStreamList.indexOf(fileStream)];
         streamArchiver.append(fileStream as Readable, { name });
     });
-    await streamArchiver.finalize();
+    // finalize the archive (ie we are done appending files but streams have to finish yet)
+    streamArchiver.finalize();
 
     const response = await uploadObject(
         client,

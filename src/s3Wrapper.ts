@@ -8,6 +8,11 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { Readable } from 'stream';
 
+const consoleLog = (message: string, object: unknown) => {
+    console.log(message);
+    console.log(object);
+};
+
 export const listObjects = async (
     client: S3Client,
     bucket: string,
@@ -23,7 +28,9 @@ export const listObjects = async (
             Prefix: path,
             ContinuationToken,
         });
+        consoleLog('ListObjectsV2Command', command);
         const { Contents, IsTruncated, NextContinuationToken } = await client.send(command);
+        consoleLog('ListObjectsV2Command Contents', Contents);
         if (!Contents || Contents.length == 0) throw new Error('Contents is undefined');
         contents = contents.concat(
             Contents.map((content) => {
@@ -34,7 +41,7 @@ export const listObjects = async (
         isTruncated = IsTruncated ? IsTruncated : false;
         ContinuationToken = NextContinuationToken;
     }
-    return contents;
+    return contents.filter((item) => item !== '');
 };
 
 export const getObjectStream = async (
@@ -47,6 +54,7 @@ export const getObjectStream = async (
         Bucket: bucket,
         Key: path.length === 0 ? fileName : `${path}/${fileName}`,
     });
+    consoleLog('GetObjectCommand', command);
     const response = await client.send(command);
     if (!response.Body) throw new Error('Body is undefined');
     return response.Body;

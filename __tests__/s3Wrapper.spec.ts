@@ -19,7 +19,11 @@ describe('s3Wrapper', () => {
     describe('listObjects', () => {
         beforeEach(() => {
             s3Mock.on(ListObjectsV2Command).resolves({
-                Contents: [{ Key: 'testPath/test1.csv' }, { Key: 'test2.csv' }],
+                Contents: [
+                    { Key: 'testPath/' },
+                    { Key: 'testPath/test1.csv' },
+                    { Key: 'test2.csv' },
+                ],
                 IsTruncated: false,
                 NextContinuationToken: undefined,
             });

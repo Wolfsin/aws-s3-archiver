@@ -142,7 +142,7 @@ describe('s3Wrapper', () => {
             s3Mock.reset();
         });
         it('file directly below bucket', async () => {
-            await uploadObject(new S3Client({}), 'bucket', '', 'test', sdkStream);
+            await uploadObject(new S3Client({}), 'bucket', '', 'test.zip', sdkStream);
             expect(s3Mock.commandCalls(PutObjectCommand)[0].args[0].input).toEqual({
                 Bucket: 'bucket',
                 Key: 'test.zip',
@@ -150,7 +150,7 @@ describe('s3Wrapper', () => {
             });
         });
         it('correctly sets the parameters when calling getObject', async () => {
-            await uploadObject(new S3Client({}), 'bucket', 'path', 'test', sdkStream);
+            await uploadObject(new S3Client({}), 'bucket', 'path', 'test.zip', sdkStream);
             expect(s3Mock.commandCalls(PutObjectCommand)[0].args[0].input).toEqual({
                 Bucket: 'bucket',
                 Key: 'path/test.zip',

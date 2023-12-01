@@ -31,6 +31,12 @@ export const s3Zip = async (
     s3ClientOptions: object = {},
     zipOptions: object = {},
 ): Promise<object> => {
+    if (sourceBucket === '') throw new Error('sourceBucket is empty');
+    if (sourcePath === '') throw new Error('sourcePath is empty');
+    if (targetFileName === '') throw new Error('targetFileName is empty');
+    if (targetBucket === '') throw new Error('targetBucket is empty');
+    if (targetPath === '') throw new Error('targetPath is empty');
+
     const streamArchiver = archiver('zip', zipOptions);
     const outputStream = new PassThrough();
     streamArchiver.pipe(outputStream);
@@ -57,7 +63,7 @@ export const s3Zip = async (
         client,
         targetBucket,
         targetPath,
-        targetFileName,
+        `${targetFileName}.zip`,
         outputStream,
     );
     return response;

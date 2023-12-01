@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import * as s3Wrapper from '../src/s3Wrapper';
 import { s3Zip } from '../src/index';
-import { Readable } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import { S3Client } from '@aws-sdk/client-s3';
 
@@ -113,9 +113,143 @@ describe('index', () => {
             });
         });
     });
-    it('sets default values correctly when targetFileName is empty', () => {});
-    it('sets default values correctly when targetBucket is empty', () => {});
-    it('sets default values correctly when targetPath is empty', () => {});
-    it('sets default values correctly when s3ClientOptions is empty', () => {});
-    it('sets default values correctly when zipOptions is empty', () => {});
+    it('sets default values correctly when targetFileName is undefined', async () => {
+        await s3Zip(
+            'sourceBucket',
+            'sourcePath',
+            undefined,
+            ['file1.txt', 'file2.txt'],
+            'targetBucket',
+            'targetPath',
+            { region: 'ap-northeast-1' },
+            { zlib: { level: 0 } },
+        );
+        expect(spyUploadObject).toHaveBeenCalledWith(
+            expect.any(S3Client),
+            'targetBucket',
+            'targetPath',
+            'archive.zip',
+            expect.any(PassThrough),
+        );
+    });
+    it('sets default values correctly when targetBucket is undefined', async () => {
+        await s3Zip(
+            'sourceBucket',
+            'sourcePath',
+            'archive',
+            ['file1.txt', 'file2.txt'],
+            undefined,
+            'targetPath',
+            { region: 'ap-northeast-1' },
+            { zlib: { level: 0 } },
+        );
+        expect(spyUploadObject).toHaveBeenCalledWith(
+            expect.any(S3Client),
+            'sourceBucket',
+            'targetPath',
+            'archive.zip',
+            expect.any(PassThrough),
+        );
+    });
+    it('sets default values correctly when targetPath is undefined', async () => {
+        await s3Zip(
+            'sourceBucket',
+            'sourcePath',
+            'archive',
+            ['file1.txt', 'file2.txt'],
+            'targetBucket',
+            undefined,
+            { region: 'ap-northeast-1' },
+            { zlib: { level: 0 } },
+        );
+        expect(spyUploadObject).toHaveBeenCalledWith(
+            expect.any(S3Client),
+            'targetBucket',
+            'sourcePath',
+            'archive.zip',
+            expect.any(PassThrough),
+        );
+    });
+    it('sets default values correctly when zipOptions is undefined', async () => {
+        await s3Zip(
+            'sourceBucket',
+            'sourcePath',
+            'archive',
+            ['file1.txt', 'file2.txt'],
+            'targetBucket',
+            'targetPath',
+            { region: 'ap-northeast-1' },
+        );
+        expect(mocks.mockArchiver).toHaveBeenCalledWith('zip', {});
+    });
+    it('throws error when sourceBucket is empty', async () => {
+        await expect(() =>
+            s3Zip(
+                '',
+                'sourcePath',
+                'archive',
+                ['file1.txt', 'file2.txt'],
+                'targetBucket',
+                'targetPath',
+                { region: 'ap-northeast-1' },
+                { zlib: { level: 0 } },
+            ),
+        ).rejects.toThrowError('sourceBucket is empty');
+    });
+    it('throws error when sourcePath is empty', async () => {
+        await expect(() =>
+            s3Zip(
+                'sourceBucket',
+                '',
+                'archive',
+                ['file1.txt', 'file2.txt'],
+                'targetBucket',
+                'targetPath',
+                { region: 'ap-northeast-1' },
+                { zlib: { level: 0 } },
+            ),
+        ).rejects.toThrowError('sourcePath is empty');
+    });
+    it('throws error when targetFileName is empty', async () => {
+        await expect(() =>
+            s3Zip(
+                'sourceBucket',
+                'sourcePath',
+                '',
+                ['file1.txt', 'file2.txt'],
+                'targetBucket',
+                'targetPath',
+                { region: 'ap-northeast-1' },
+                { zlib: { level: 0 } },
+            ),
+        ).rejects.toThrowError('targetFileName is empty');
+    });
+    it('throws error when targetBucket is empty', async () => {
+        await expect(() =>
+            s3Zip(
+                'sourceBucket',
+                'sourcePath',
+                'archive',
+                ['file1.txt', 'file2.txt'],
+                '',
+                'targetPath',
+                { region: 'ap-northeast-1' },
+                { zlib: { level: 0 } },
+            ),
+        ).rejects.toThrowError('targetBucket is empty');
+    });
+    it('throws error when targetPath is empty', async () => {
+        await expect(() =>
+            s3Zip(
+                'sourceBucket',
+                'sourcePath',
+                'archive',
+                ['file1.txt', 'file2.txt'],
+                'targetBucket',
+                '',
+                { region: 'ap-northeast-1' },
+                { zlib: { level: 0 } },
+            ),
+        ).rejects.toThrowError('targetPath is empty');
+    });
 });

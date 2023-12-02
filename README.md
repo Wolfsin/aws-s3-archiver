@@ -1,6 +1,6 @@
 # AWS S3 Archiver
 
-[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/) [![Node.js TEST](https://github.com/Wolfsin/aws-s3-archiver/actions/workflows/npm-test.yml/badge.svg?branch=main)](https://github.com/Wolfsin/aws-s3-archiver/actions/workflows/npm-test.yml) [![npm version](https://badge.fury.io/js/aws-s3-archiver.svg)](https://badge.fury.io/js/aws-s3-archiver) ![NPM License](https://img.shields.io/npm/l/aws-s3-archiver)
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/) [![Node.js TEST](https://github.com/Wolfsin/aws-s3-archiver/actions/workflows/npm-test.yml/badge.svg?branch=main)](https://github.com/Wolfsin/aws-s3-archiver/actions/workflows/npm-test.yml) [![codecov](https://codecov.io/gh/Wolfsin/aws-s3-archiver/graph/badge.svg?token=2BA5F5JJRS)](https://codecov.io/gh/Wolfsin/aws-s3-archiver) [![npm version](https://badge.fury.io/js/aws-s3-archiver.svg)](https://badge.fury.io/js/aws-s3-archiver) ![NPM License](https://img.shields.io/npm/l/aws-s3-archiver)
 
 ## Introduction
 
@@ -111,4 +111,5 @@ npm run test
 ## Releases / Changelogs
 
 1.0.0 - Initial stable release
+
 1.0.1 - Update README.md with Usage examples

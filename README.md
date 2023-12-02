@@ -1,15 +1,17 @@
 # AWS S3 Archiver
 
+[![TypeScript](https://img.shields.io/badge/%3C%2F%3E-TypeScript-%230074c1.svg)](http://www.typescriptlang.org/) [![npm version](https://badge.fury.io/js/aws-s3-archiver.svg)](https://badge.fury.io/js/aws-s3-archiver) ![NPM License](https://img.shields.io/npm/l/aws-s3-archiver)
+
 ## Introduction
 
-Based on [AWS SDK v3](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/) and [archiver](https://github.com/archiverjs/node-archiver), use **stream** to archive files in the AWS S3 storage bucket and generate a zip file to store it back in S3. 
+Based on [AWS SDK v3](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/) and [archiver](https://github.com/archiverjs/node-archiver), use **stream** to archive files in the AWS S3 storage bucket and generate a zip file to store it back in S3.
 
 Developed and full support for TypeScript. Supports ES Modules and CommonJS.
 
 ## Installation
 
 ```
-npm i 
+npm i aws-s3-archiver
 ```
 
 ## Description
@@ -34,52 +36,71 @@ npm i
 
 1. **Minimal** - With the minimum number of parameters, it will archive all files in the provided bucket/path and generate a file named 'archive.zip' in the same directory.
 
-```typescript
-import {s3Zip} from ''
+    ```typescript
+    import { s3Zip } from 'aws-s3-archiver';
 
-const result = await s3Zip('sourceBucket', 'sourcePath')
-console.log(result);
-```
+    const result = await s3Zip('sourceBucket', 'sourcePath');
+    console.log(result);
+    ```
 
 2. Archive all files in the provided bucket/path and generate a zip file with the given name in the same directory.
 
-```typescript
-import {s3Zip} from ''
+    ```typescript
+    import { s3Zip } from 'aws-s3-archiver';
 
-const result = await s3Zip('sourceBucket', 'sourcePath', 'targetFileName')
-console.log(result);
-```
+    const result = await s3Zip('sourceBucket', 'sourcePath', 'targetFileName');
+    console.log(result);
+    ```
 
 3. Archive specified list of files in the the provided bucket/path.
 
-```typescript
-import {s3Zip} from ''
+    ```typescript
+    import { s3Zip } from 'aws-s3-archiver';
 
-const result = await s3Zip('sourceBucket', 'sourcePath', 'targetFileName', ['file1.txt', 'file2.pdf'])
-console.log(result);
-```
+    const result = await s3Zip('sourceBucket', 'sourcePath', 'targetFileName', [
+        'file1.txt',
+        'file2.pdf',
+    ]);
+    console.log(result);
+    ```
 
 4. Archive all files in the provided bucket/path and generate zip file with the given bucket/path.
 
-```typescript
-import {s3Zip} from ''
+    ```typescript
+    import { s3Zip } from 'aws-s3-archiver';
 
-const result = await s3Zip('sourceBucket', 'sourcePath', 'targetFileName', [], 'targetBucket', 'targetPath')
-console.log(result);
-```
+    const result = await s3Zip(
+        'sourceBucket',
+        'sourcePath',
+        'targetFileName',
+        [],
+        'targetBucket',
+        'targetPath',
+    );
+    console.log(result);
+    ```
 
 5. Customize S3Client and compression attributes.
 
-S3Client Options: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/ - index for S3Client Configuration 
+    S3Client Options: https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/ - index for S3Client Configuration
 
-ZIP Options: https://www.archiverjs.com/docs/archiver#zip-options
+    ZIP Options: https://www.archiverjs.com/docs/archiver#zip-options
 
-```typescript
-import {s3Zip} from ''
+    ```typescript
+    import { s3Zip } from 'aws-s3-archiver';
 
-const result = await s3Zip('sourceBucket', 'sourcePath', 'archive', [], 'targetBucket', 'targetPath', { region: 'us-east-1' }, { zlib: { level: 9 } })
-console.log(result);
-```
+    const result = await s3Zip(
+        'sourceBucket',
+        'sourcePath',
+        'archive',
+        [],
+        'targetBucket',
+        'targetPath',
+        { region: 'us-east-1' },
+        { zlib: { level: 9 } },
+    );
+    console.log(result);
+    ```
 
 ## Test
 
@@ -87,19 +108,7 @@ console.log(result);
 npm run test
 ```
 
-## Coverage
-
-```
-npm run coverage
-```
-
-> Coverage report from v8
-> | File         | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s |
-> | ------------ | ------- | -------- | ------- | ------- | ----------------- |
-> | All files    | 100     | 100      | 100     | 100     |                   |
-> | index.ts     | 100     | 100      | 100     | 100     |                   |
-> | s3Wrapper.ts | 100     | 100      | 100     | 100     |                   |
-
 ## Releases / Changelogs
 
 1.0.0 - Initial stable release
+1.0.1 - Update README.md with Usage examples

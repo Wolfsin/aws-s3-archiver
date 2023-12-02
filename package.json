@@ -52,7 +52,10 @@
     "author": "Wolfsin",
     "license": "MIT",
     "homepage": "https://github.com/Wolfsin/aws-s3-archiver#readme",
-    "repository": "github:Wolfsin/aws-s3-archiver",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Wolfsin/aws-s3-archiver.git"
+    },
     "bugs": {
         "url": "https://github.com/Wolfsin/aws-s3-archiver/issues"
     }

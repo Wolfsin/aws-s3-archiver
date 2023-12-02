@@ -19,6 +19,10 @@ jobs:
               with:
                   node-version: 21
             - run: npm ci
-            - run: npm test
+            - name: Test
+              run: npm test
+            - name: Coverage
+              run: npm run coverage
+
             - name: Coverage Badge
               uses: we-cli/coverage-badge-action@v1.0.1

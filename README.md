@@ -28,6 +28,7 @@ npm i aws-s3-archiver
  * @param {string} targetPath - The path in the target bucket where the zip file will be stored. Defaults to the source path.
  * @param {object} s3ClientOptions - Options for the S3 client. Defaults to an empty object.
  * @param {object} zipOptions - Options for the archiver. Defaults to an empty object.
+ * @param {boolean} debugFlag - Flag to enable debug logging. Defaults to false.
  * @returns {Promise<object>} A promise that resolves with s3Upload Response when the zip file has been created and stored in S3.
  */
 ```
@@ -102,6 +103,25 @@ npm i aws-s3-archiver
     console.log(result);
     ```
 
+6. If you need print out debug logs for aws sdk list/get command, set the debugFlag to true.
+
+    ```typescript
+    import { s3Zip } from 'aws-s3-archiver';
+
+    const result = await s3Zip(
+        'sourceBucket',
+        'sourcePath',
+        'archive',
+        [],
+        'targetBucket',
+        'targetPath',
+        { region: 'us-east-1' },
+        { zlib: { level: 9 } },
+        true,
+    );
+    console.log(result);
+    ```
+
 ## Test
 
 ```
@@ -113,3 +133,5 @@ npm run test
 1.0.0 - Initial stable release
 
 1.0.1 - Update README.md with Usage examples
+
+1.0.2 - Add debugFlag to enable/disable aws sdk list/get command logging.

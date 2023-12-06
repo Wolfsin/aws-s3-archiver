@@ -8,15 +8,18 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { Readable } from 'stream';
 
-const consoleLog = (message: string, object: unknown) => {
-    console.log(message);
-    console.log(object);
+const consoleLog = (message: string, object: unknown, debugFlag: boolean) => {
+    if (debugFlag) {
+        console.log(message);
+        console.log(object);
+    } else return;
 };
 
 export const listObjects = async (
     client: S3Client,
     bucket: string,
     path: string,
+    debugFlag = false,
 ): Promise<string[]> => {
     let isTruncated = true;
     let contents: string[] = [];
@@ -28,9 +31,9 @@ export const listObjects = async (
             Prefix: path,
             ContinuationToken,
         });
-        consoleLog('ListObjectsV2Command', command);
+        consoleLog('ListObjectsV2Command', command, debugFlag);
         const { Contents, IsTruncated, NextContinuationToken } = await client.send(command);
-        consoleLog('ListObjectsV2Command Contents', Contents);
+        consoleLog('ListObjectsV2Command Contents', Contents, debugFlag);
         if (!Contents || Contents.length == 0) throw new Error('Contents is undefined');
         contents = contents.concat(
             Contents.map((content) => {
@@ -49,12 +52,13 @@ export const getObjectStream = async (
     bucket: string,
     path: string,
     fileName: string,
+    debugFlag = false,
 ): Promise<Readable | ReadableStream | Blob> => {
     const command = new GetObjectCommand({
         Bucket: bucket,
         Key: path.length === 0 ? fileName : `${path}/${fileName}`,
     });
-    consoleLog('GetObjectCommand', command);
+    consoleLog('GetObjectCommand', command, debugFlag);
     const response = await client.send(command);
     if (!response.Body) throw new Error('Body is undefined');
     return response.Body;

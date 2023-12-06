@@ -14,6 +14,7 @@ import archiver from 'archiver';
  * @param {string} targetPath - The path in the target bucket where the zip file will be stored. Defaults to the source path.
  * @param {object} s3ClientOptions - Options for the S3 client. Defaults to an empty object.
  * @param {object} zipOptions - Options for the archiver. Defaults to an empty object.
+ * @param {boolean} debugFlag - Flag to enable debug logging. Defaults to false.
  * @returns {Promise<object>} A promise that resolves with s3Upload Response when the zip file has been created and stored in S3.
  * @example s3Zip('sourceBucket', 'sourcePath', 'archive')
  * @example s3Zip('sourceBucket', 'sourcePath', 'archive', ['file1.txt', 'file2.txt'])
@@ -30,6 +31,7 @@ export const s3Zip = async (
     targetPath: string = sourcePath,
     s3ClientOptions: object = {},
     zipOptions: object = {},
+    debugFlag = false,
 ): Promise<object> => {
     if (sourceBucket === '') throw new Error('sourceBucket is empty');
     if (sourcePath === '') throw new Error('sourcePath is empty');
@@ -43,13 +45,13 @@ export const s3Zip = async (
     const client = new S3Client(s3ClientOptions);
 
     if (sourceFileList.length === 0) {
-        const listObjectResult = await listObjects(client, sourceBucket, sourcePath);
+        const listObjectResult = await listObjects(client, sourceBucket, sourcePath, debugFlag);
         sourceFileList = [...listObjectResult];
     }
 
     const fileStreamList = await Promise.all(
         sourceFileList.map((fileName) =>
-            getObjectStream(client, sourceBucket, sourcePath, fileName),
+            getObjectStream(client, sourceBucket, sourcePath, fileName, debugFlag),
         ),
     );
     fileStreamList.forEach((fileStream) => {

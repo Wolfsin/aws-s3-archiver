@@ -68,6 +68,7 @@ describe('index', () => {
                 expect.any(S3Client),
                 'sourceBucket',
                 'sourcePath',
+                false,
             );
         });
     });
@@ -95,6 +96,7 @@ describe('index', () => {
                 'sourceBucket',
                 'sourcePath',
                 'file1.txt',
+                false,
             );
             expect(spyGetObjectStream).toHaveBeenNthCalledWith(
                 2,
@@ -102,6 +104,7 @@ describe('index', () => {
                 'sourceBucket',
                 'sourcePath',
                 'file2.txt',
+                false,
             );
         });
         it('calls archiver append with correct parameters for each file in the sourceFileList', () => {

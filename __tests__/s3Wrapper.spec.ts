@@ -166,4 +166,27 @@ describe('s3Wrapper', () => {
             });
         });
     });
+    describe('consoleLog', () => {
+        const spyLog = vi.spyOn(console, 'log');
+        const stream = new Readable();
+        stream.push('hello world');
+        stream.push(null);
+        const sdkStream = sdkStreamMixin(stream);
+
+        beforeEach(() => {
+            s3Mock.on(GetObjectCommand).resolves({ Body: sdkStream });
+            spyLog.mockReset();
+        });
+        afterAll(() => {
+            spyLog.mockRestore();
+        });
+        it('does not log when debugFlag is false', async () => {
+            await getObjectStream(new S3Client({}), 'bucket', '', 'test.csv', false);
+            expect(spyLog).not.toHaveBeenCalled();
+        });
+        it('logs when debugFlag is true', async () => {
+            await getObjectStream(new S3Client({}), 'bucket', '', 'test.csv', true);
+            expect(spyLog).toHaveBeenCalled();
+        });
+    });
 });

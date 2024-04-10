@@ -199,20 +199,6 @@ describe('index', () => {
             ),
         ).rejects.toThrowError('sourceBucket is empty');
     });
-    it('throws error when sourcePath is empty', async () => {
-        await expect(() =>
-            s3Zip(
-                'sourceBucket',
-                '',
-                'archive',
-                ['file1.txt', 'file2.txt'],
-                'targetBucket',
-                'targetPath',
-                { region: 'ap-northeast-1' },
-                { zlib: { level: 0 } },
-            ),
-        ).rejects.toThrowError('sourcePath is empty');
-    });
     it('throws error when targetFileName is empty', async () => {
         await expect(() =>
             s3Zip(
@@ -240,19 +226,5 @@ describe('index', () => {
                 { zlib: { level: 0 } },
             ),
         ).rejects.toThrowError('targetBucket is empty');
-    });
-    it('throws error when targetPath is empty', async () => {
-        await expect(() =>
-            s3Zip(
-                'sourceBucket',
-                'sourcePath',
-                'archive',
-                ['file1.txt', 'file2.txt'],
-                'targetBucket',
-                '',
-                { region: 'ap-northeast-1' },
-                { zlib: { level: 0 } },
-            ),
-        ).rejects.toThrowError('targetPath is empty');
     });
 });

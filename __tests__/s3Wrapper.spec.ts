@@ -117,11 +117,18 @@ describe('s3Wrapper', () => {
                 Key: 'test.csv',
             });
         });
-        it('correctly sets the parameters when calling getObject', async () => {
+        it('correctly sets the parameters when calling getObject by path', async () => {
             await getObjectStream(new S3Client({}), 'bucket', 'path', 'test.csv');
             expect(s3Mock.commandCalls(GetObjectCommand)[0].args[0].input).toEqual({
                 Bucket: 'bucket',
                 Key: 'path/test.csv',
+            });
+        });
+        it('correctly sets the parameters when calling getObject by empty path', async () => {
+            await getObjectStream(new S3Client({}), 'bucket', '', 'test.csv');
+            expect(s3Mock.commandCalls(GetObjectCommand)[0].args[0].input).toEqual({
+                Bucket: 'bucket',
+                Key: 'test.csv',
             });
         });
         it('returns the expected value', async () => {

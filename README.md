@@ -135,3 +135,5 @@ npm run test
 1.0.1 - Update README.md with Usage examples
 
 1.0.2 - Add debugFlag to enable/disable aws sdk list/get command logging.
+
+1.0.3 - Fixed a bug that allows an empty path.

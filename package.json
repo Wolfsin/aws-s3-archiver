@@ -1,6 +1,6 @@
 {
     "name": "aws-s3-archiver",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Archives files from an AWS S3 bucket with stream and stores the zip file in S3.",
     "main": "./dist/index.cjs",
     "types": "./dist/index.d.ts",

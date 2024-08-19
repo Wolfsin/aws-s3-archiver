@@ -1,10 +1,9 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
-import 'aws-sdk-client-mock-jest';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import { Readable } from 'stream';
 
-import { describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { listObjects, getObjectStream, uploadObject } from '../src/s3Wrapper';
 
 const s3Mock = mockClient(S3Client);
@@ -64,7 +63,7 @@ describe('s3Wrapper', () => {
                 });
 
             await listObjects(new S3Client({}), 'bucket', 'path');
-            expect(s3Mock).toReceiveCommandTimes(ListObjectsV2Command, 2);
+            expect(s3Mock.commandCalls(ListObjectsV2Command)).toHaveLength(2);
             expect(s3Mock.commandCalls(ListObjectsV2Command)[0].args[0].input).toEqual({
                 Bucket: 'bucket',
                 Prefix: 'path',

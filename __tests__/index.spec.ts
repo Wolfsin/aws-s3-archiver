@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import * as s3Wrapper from '../src/s3Wrapper';
 import { s3Zip } from '../src/index';
 import { PassThrough, Readable } from 'stream';
